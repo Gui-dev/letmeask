@@ -1,10 +1,15 @@
 import React from 'react'
 
+import './services/firebase'
+import { Routes } from './routes'
+import { GlobalStyle } from './assets/style/global'
+
 function App() {
   return (
-    <div className="App">
-      <h1>Hello World</h1>
-    </div>
+    <>
+      <GlobalStyle />
+      <Routes />
+    </>
   )
 }
 
