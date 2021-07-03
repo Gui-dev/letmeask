@@ -1,12 +1,24 @@
 import React from 'react'
+import { useHistory } from 'react-router-dom'
 
 import illustrationImg from './../../assets/images/illustration.svg'
 import logoImg from './../../assets/images/logo.svg'
 import googleIconImg from './../../assets/images/google-icon.svg'
 import { Button } from './../../components/Button'
+import { useAuthContext } from '../../hooks/AuthContext'
 import { Container, Aside, Main } from './style'
 
 export const Home: React.FC = () => {
+  const history = useHistory()
+  const { signInWithGoogle, user } = useAuthContext()
+
+  const handleCreateRoom = async () => {
+    if (!user) {
+      await signInWithGoogle()
+    }
+    history.push('/rooms/new')
+  }
+
   return (
     <Container>
       <Aside>
@@ -18,7 +30,7 @@ export const Home: React.FC = () => {
       <Main>
         <div className="main-content">
           <img src={logoImg} alt="Letmeask" title="Letmeask"/>
-          <button className="create-room">
+          <button className="create-room" onClick={ handleCreateRoom }>
             <img src={googleIconImg} alt="Logo do Google" title="Logo do Google"/>
             Crie sua sala com o Google
           </button>
