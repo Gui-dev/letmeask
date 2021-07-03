@@ -1,7 +1,7 @@
 import React from 'react'
 
 import './services/firebase'
-import { AuthContextProvider } from './hooks/AuthContext'
+import { AuthContextProvider } from './contexts/AuthContext'
 import { Routes } from './routes'
 import { GlobalStyle } from './assets/style/global'
 
