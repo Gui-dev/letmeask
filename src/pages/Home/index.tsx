@@ -5,12 +5,12 @@ import illustrationImg from './../../assets/images/illustration.svg'
 import logoImg from './../../assets/images/logo.svg'
 import googleIconImg from './../../assets/images/google-icon.svg'
 import { Button } from './../../components/Button'
-import { useAuthContext } from '../../hooks/AuthContext'
+import { useAuth } from '../../hooks/useAuth'
 import { Container, Aside, Main } from './style'
 
 export const Home: React.FC = () => {
   const history = useHistory()
-  const { signInWithGoogle, user } = useAuthContext()
+  const { signInWithGoogle, user } = useAuth()
 
   const handleCreateRoom = async () => {
     if (!user) {

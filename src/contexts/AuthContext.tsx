@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React, { createContext, useEffect, useState } from 'react'
 
 import { auth, firebase } from './../services/firebase'
 
@@ -17,7 +17,7 @@ interface IAuthContextProviderProps {
   children: React.ReactNode
 }
 
-const AuthContext = createContext({} as IAuthContextProps)
+export const AuthContext = createContext({} as IAuthContextProps)
 
 export const AuthContextProvider = ({ children }: IAuthContextProviderProps) => {
   const [user, setUser] = useState<IUserProps>()
@@ -63,9 +63,4 @@ export const AuthContextProvider = ({ children }: IAuthContextProviderProps) => 
       { children }
     </AuthContext.Provider>
   )
-}
-
-export const useAuthContext = () => {
-  const context = useContext(AuthContext)
-  return context
 }
