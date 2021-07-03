@@ -23,7 +23,7 @@ export const AuthContextProvider = ({ children }: IAuthContextProviderProps) => 
   const [user, setUser] = useState<IUserProps>()
 
   useEffect(() => {
-    auth.onAuthStateChanged(user => {
+    const unsubscribe =  auth.onAuthStateChanged(user => {
       if (user) {
         const { displayName, photoURL, uid } = user
 
@@ -34,6 +34,10 @@ export const AuthContextProvider = ({ children }: IAuthContextProviderProps) => 
         setUser({ id: uid, name: displayName, avatar: photoURL })
       }
     })
+
+    return () => {
+      unsubscribe()
+    }
   }, [])
 
   const signInWithGoogle = async () => {
