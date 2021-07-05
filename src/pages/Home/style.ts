@@ -121,3 +121,11 @@ export const Main = styled.main`
     }
   }
 `
+
+export const Error = styled.span`
+  font-size: 1.6rem;
+  font-weight: 500;
+  text-align: center;
+  color: #EA4335;
+  margin-bottom: 1.6rem;
+`
