@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { FormEvent, useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
 import illustrationImg from './../../assets/images/illustration.svg'
@@ -6,17 +6,45 @@ import logoImg from './../../assets/images/logo.svg'
 import googleIconImg from './../../assets/images/google-icon.svg'
 import { Button } from './../../components/Button'
 import { useAuth } from '../../hooks/useAuth'
-import { Container, Aside, Main } from './style'
+import { database } from '../../services/firebase'
+
+import { Container, Aside, Main, Error } from './style'
+import { setTimeout } from 'timers'
 
 export const Home: React.FC = () => {
   const history = useHistory()
   const { signInWithGoogle, user } = useAuth()
+  const [roomCode, setRoomCode] = useState('')
+  const [error, setError] = useState(false)
+
+  useEffect(() => {
+    if (error) {
+      setTimeout(() => {
+        setError(false)
+      }, 4000)
+    }
+  }, [error])
 
   const handleCreateRoom = async () => {
     if (!user) {
       await signInWithGoogle()
     }
     history.push('/rooms/new')
+  }
+
+  const handleJoinRoom = async (event: FormEvent) => {
+    event.preventDefault()
+
+    if (roomCode.trim() === '') return
+
+    const roomRef = await database.ref(`rooms/${roomCode}`).get()
+
+    if (!roomRef.exists()) {
+      setError(true)
+      return
+    }
+
+    history.push(`/rooms/${roomCode}`)
   }
 
   return (
@@ -37,10 +65,15 @@ export const Home: React.FC = () => {
 
           <div className="separator">ou entre em uma sala</div>
 
-          <form>
+          <form onSubmit={ handleJoinRoom }>
+            { error && (
+              <Error>Essa sala não existe</Error>
+            ) }
             <input
               type="text"
               placeholder="Digite o código da sala"
+              value={ roomCode }
+              onChange={ event => setRoomCode(event.target.value) }
             />
             <Button
               title="Entrar na sala"
