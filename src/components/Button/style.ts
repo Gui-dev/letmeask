@@ -12,7 +12,6 @@ export const Container = styled.button<IButtonProps>`
   font-weight: 500;
   color: #FFF;
   height: 5rem;
-  margin-top: 6.4rem;
   padding: 0 3.2rem;
   background-color: #835AFD;
   border: 0;
