@@ -1,41 +1,165 @@
-import React from 'react'
+import React, { FormEvent, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import logoImg from './../../assets/images/logo.svg'
 import { Button } from '../../components/Button'
 import { RoomCode } from '../../components/RoomCode'
-import { Container, Header, Main } from './style'
+import { useAuth } from '../../hooks/useAuth'
+import { database } from '../../services/firebase'
+
+import { Container, Header, Main, Error, UserInfo } from './style'
+import { Load } from '../../components/Load'
 
 interface IRoomParams {
   id: string
 }
 
-export const Room: React.FC = () => {
+type FirebaseQuestions = Record<string, {
+  author: {
+    name: string
+    avatar: string
+  }
+  content: string
+  isHighlighted: boolean
+  isAnswered: boolean
+}>
+
+type Questions = {
+  id: string
+  author: {
+    name: string
+    avatar: string
+  }
+  content: string
+  isHighlighted: boolean
+  isAnswered: boolean
+}
+
+export const Room = () => {
+  const [newQuestion, setNewQuestion] = useState('')
+  const [error, setError] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+  const [questions, setQuestions] = useState<Questions[]>([])
+  const [title, setTitle] = useState('')
+  const { user } = useAuth()
   const params = useParams<IRoomParams>()
+  const roomId = params.id
+
+  useEffect(() => {
+    const roomRef = database.ref(`rooms/${roomId}`)
+
+    roomRef.on('value', room => {
+      const databaseRoom = room.val()
+      const firebaseQuestions: FirebaseQuestions = databaseRoom.questions ?? {}
+
+      const parsedQuestions = Object.entries(firebaseQuestions).map(([key, value]) => {
+        return {
+          id: key,
+          author: value.author,
+          content: value.content,
+          isHighlighted: value.isHighlighted,
+          isAnswered: value.isAnswered
+        }
+      })
+
+      setTitle(databaseRoom.title)
+      setQuestions(parsedQuestions)
+    })
+  }, [roomId])
+
+  useEffect(() => {
+    if (error) {
+      setTimeout(() => {
+        setError(false)
+        setErrorMessage('')
+      }, 4000)
+    }
+  }, [error])
+
+  const handleSendQuestion = async (event: FormEvent) => {
+    event.preventDefault()
+
+    if (newQuestion.trim() === '') {
+      setError(true)
+      setErrorMessage('Ooooops, você não gostaria de fazer uma pergunta ?')
+      return
+    }
+
+    if (!user) {
+      setError(true)
+      setErrorMessage('Ooooops, você precisa está logado para fazer uma pergunta')
+      return
+    }
+
+    const question = {
+      content: newQuestion,
+      author: {
+        name: user.name,
+        avatar: user.avatar
+      },
+      isHighlighted: false,
+      isAnswered: false
+    }
+
+    await database.ref(`rooms/${roomId}/questions`).push(question)
+    setNewQuestion('')
+  }
+
+  if (!user) {
+    return (
+      <Load />
+    )
+  }
 
   return (
+
     <Container>
       <Header>
         <div className="content">
           <img src={logoImg} alt="Letmeask" title="Letmeask" />
-          <RoomCode code={ params.id }/>
+          <RoomCode code={ roomId }/>
         </div>
       </Header>
 
       <Main>
         <div className="room-title">
-          <h1>Sala React</h1>
-          <span>4 perguntas</span>
+          <h1>Sala { title }</h1>
+          { questions.length && <span>{questions.length} perguntas</span> }
         </div>
 
-        <form>
-          <textarea placeholder="O que você quer perguntar ?"/>
+        <form onSubmit={ handleSendQuestion }>
+          { error && (
+            <Error>{ errorMessage }</Error>
+          ) }
+          <textarea
+            placeholder="O que você quer perguntar ?"
+            value={ newQuestion }
+            onChange={ event => setNewQuestion(event.target.value) }
+          />
 
           <div className="form-footer">
-            <span>Para enviar uma pergunta, faça seu <button>login</button>.</span>
-            <Button type="submit" title="Enviar pergunta"/>
+            {
+              user
+              ? (
+                <UserInfo>
+                  <img src={user.avatar} alt={user.name} title={user.name} />
+                  <span>{ user.name }</span>
+                </UserInfo>
+              )
+              : (
+                <span>Para enviar uma pergunta, faça seu <button>login</button>.</span>
+              )
+            }
+
+            <Button
+              type="submit"
+              disabled={!user}
+              title="Enviar pergunta"
+            />
           </div>
         </form>
+
+        {JSON.stringify(questions)}
       </Main>
     </Container>
   )
