@@ -123,3 +123,7 @@ export const UserInfo = styled.div`
     color: #29292E;
   }
 `
+
+export const QuestionsList = styled.div`
+  margin-top: 3.2rem;
+`

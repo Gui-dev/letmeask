@@ -6,66 +6,26 @@ import { Button } from '../../components/Button'
 import { RoomCode } from '../../components/RoomCode'
 import { useAuth } from '../../hooks/useAuth'
 import { database } from '../../services/firebase'
-
-import { Container, Header, Main, Error, UserInfo } from './style'
 import { Load } from '../../components/Load'
+import { Questions } from '../../components/Questions'
+import { useRoom } from '../../hooks/useRoom'
+
+import { Container, Header, Main, Error, UserInfo, QuestionsList } from './style'
 
 interface IRoomParams {
   id: string
-}
-
-type FirebaseQuestions = Record<string, {
-  author: {
-    name: string
-    avatar: string
-  }
-  content: string
-  isHighlighted: boolean
-  isAnswered: boolean
-}>
-
-type Questions = {
-  id: string
-  author: {
-    name: string
-    avatar: string
-  }
-  content: string
-  isHighlighted: boolean
-  isAnswered: boolean
 }
 
 export const Room = () => {
   const [newQuestion, setNewQuestion] = useState('')
   const [error, setError] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
-  const [questions, setQuestions] = useState<Questions[]>([])
-  const [title, setTitle] = useState('')
-  const { user } = useAuth()
+
   const params = useParams<IRoomParams>()
   const roomId = params.id
 
-  useEffect(() => {
-    const roomRef = database.ref(`rooms/${roomId}`)
-
-    roomRef.on('value', room => {
-      const databaseRoom = room.val()
-      const firebaseQuestions: FirebaseQuestions = databaseRoom.questions ?? {}
-
-      const parsedQuestions = Object.entries(firebaseQuestions).map(([key, value]) => {
-        return {
-          id: key,
-          author: value.author,
-          content: value.content,
-          isHighlighted: value.isHighlighted,
-          isAnswered: value.isAnswered
-        }
-      })
-
-      setTitle(databaseRoom.title)
-      setQuestions(parsedQuestions)
-    })
-  }, [roomId])
+  const { user } = useAuth()
+  const { questions, title } = useRoom(roomId)
 
   useEffect(() => {
     if (error) {
@@ -159,7 +119,18 @@ export const Room = () => {
           </div>
         </form>
 
-        {JSON.stringify(questions)}
+        <QuestionsList>
+          { questions.map(question => {
+            return (
+              <Questions
+                key={ String(question.id) }
+                author={ question.author }
+                content={ question.content }
+              />
+            )
+          }) }
+        </QuestionsList>
+
       </Main>
     </Container>
   )
