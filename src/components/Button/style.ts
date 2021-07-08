@@ -2,7 +2,9 @@ import styled from 'styled-components'
 import { ButtonHTMLAttributes } from 'react'
 
 
-type IButtonProps = ButtonHTMLAttributes<HTMLButtonElement>
+type IButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+  isOutlined?: boolean
+}
 
 export const Container = styled.button<IButtonProps>`
   display: flex;
@@ -10,11 +12,11 @@ export const Container = styled.button<IButtonProps>`
   justify-content: center;
   font-size: 1.6rem;
   font-weight: 500;
-  color: #FFF;
+  color: ${({ isOutlined }) => isOutlined ? '#835AFD' : '#FFF'};
   height: 5rem;
   padding: 0 3.2rem;
-  background-color: #835AFD;
-  border: 0;
+  background-color: ${({ isOutlined }) => isOutlined ? '#FFF' : '#835AFD'};
+  border: ${({ isOutlined }) => isOutlined ? '1px solid #835AFD' : '0'};
   border-radius: .8rem;
   cursor: pointer;
   transition: filter 0.2s;
