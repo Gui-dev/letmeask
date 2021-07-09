@@ -1,69 +1,44 @@
-import React, { FormEvent, useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import React from 'react'
+import { useHistory, useParams } from 'react-router-dom'
 
 import logoImg from './../../assets/images/logo.svg'
+import deleteImg from './../../assets/images/delete.svg'
 import { Button } from '../../components/Button'
 import { RoomCode } from '../../components/RoomCode'
 import { useAuth } from '../../hooks/useAuth'
-import { database } from '../../services/firebase'
 import { Load } from '../../components/Load'
 import { Questions } from '../../components/Questions'
 import { useRoom } from '../../hooks/useRoom'
+import { database } from '../../services/firebase'
 
-import { Container, Header, Main, Error, UserInfo, QuestionsList } from './style'
+import { Container, Header, Main, QuestionsList } from './style'
 
 interface IRoomParams {
   id: string
 }
 
 export const AdminRoom = () => {
-  const [newQuestion, setNewQuestion] = useState('')
-  const [error, setError] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
-
+  const history = useHistory()
   const params = useParams<IRoomParams>()
   const roomId = params.id
 
   const { user } = useAuth()
   const { questions, title } = useRoom(roomId)
 
-  useEffect(() => {
-    if (error) {
-      setTimeout(() => {
-        setError(false)
-        setErrorMessage('')
-      }, 4000)
-    }
-  }, [error])
+  const handleEndRoom = async () => {
+    await database.ref(`rooms/${roomId}`).update({
+      endedAt: new Date()
+    })
 
-  const handleSendQuestion = async (event: FormEvent) => {
-    event.preventDefault()
-
-    if (newQuestion.trim() === '') {
-      setError(true)
-      setErrorMessage('Ooooops, você não gostaria de fazer uma pergunta ?')
-      return
-    }
-
-    if (!user) {
-      setError(true)
-      setErrorMessage('Ooooops, você precisa está logado para fazer uma pergunta')
-      return
-    }
-
-    const question = {
-      content: newQuestion,
-      author: {
-        name: user.name,
-        avatar: user.avatar
-      },
-      isHighlighted: false,
-      isAnswered: false
-    }
-
-    await database.ref(`rooms/${roomId}/questions`).push(question)
-    setNewQuestion('')
+    history.push('/')
   }
+
+  const handleDeleteQuestion = async (questionId: string) => {
+    if (window.confirm('Tem certeza que você deseja excluir está pergunta')) {
+      await database.ref(`rooms/${roomId}/questions/${questionId}`).remove()
+    }
+  }
+
 
   if (!user) {
     return (
@@ -79,7 +54,11 @@ export const AdminRoom = () => {
           <img src={logoImg} alt="Letmeask" title="Letmeask" />
           <div>
             <RoomCode code={ roomId }/>
-            <Button title="Encerrar sala" isOutlined/>
+            <Button
+              title="Encerrar sala"
+              isOutlined
+              onClick={ handleEndRoom }
+            />
           </div>
         </div>
       </Header>
@@ -97,7 +76,13 @@ export const AdminRoom = () => {
                 key={ String(question.id) }
                 author={ question.author }
                 content={ question.content }
-              />
+              >
+                <button
+                  onClick={ () => handleDeleteQuestion(question.id) }
+                >
+                  <img src={deleteImg} alt="Remover pergunta" title="Remover pergunta"/>
+                </button>
+              </Questions>
             )
           }) }
         </QuestionsList>

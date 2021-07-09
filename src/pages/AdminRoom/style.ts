@@ -107,31 +107,6 @@ export const Main = styled.main`
   }
 `
 
-export const Error = styled.span`
-  font-size: 1.6rem;
-  font-weight: 500;
-  text-align: center;
-  color: #EA4335;
-`
-
-export const UserInfo = styled.div`
-  display: flex;
-  align-items: center;
-
-  img {
-    height: 3.2rem;
-    width: 3.2rem;
-    margin-right: .8rem;
-    border-radius: 50%;
-  }
-
-  > span {
-    font-size: 1.4rem;
-    font-weight: 500;
-    color: #29292E;
-  }
-`
-
 export const QuestionsList = styled.div`
   margin-top: 3.2rem;
 `
