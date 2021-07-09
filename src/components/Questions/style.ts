@@ -38,5 +38,35 @@ export const Footer = styled.footer`
       color: #737380;
     }
   }
+
+  button {
+    color: #737380;
+    background-color: transparent;
+    border: 0;
+    transition: filter 0.2s;
+    cursor: pointer;
+
+    &:hover {
+      filter: brightness(0.7);
+    }
+
+    &.like-button {
+      display: flex;
+      align-items: flex-end;
+      gap: .8rem;
+
+      &.liked {
+        color: #835AFD;
+
+        svg path {
+          stroke: #835AFD;
+        }
+      }
+
+      span {
+        font-size: 1.4rem;
+      }
+    }
+  }
 `
 
