@@ -16,11 +16,13 @@ export const Home: React.FC = () => {
   const { signInWithGoogle, user } = useAuth()
   const [roomCode, setRoomCode] = useState('')
   const [error, setError] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
     if (error) {
       setTimeout(() => {
         setError(false)
+        setErrorMessage('')
       }, 4000)
     }
   }, [error])
@@ -41,6 +43,13 @@ export const Home: React.FC = () => {
 
     if (!roomRef.exists()) {
       setError(true)
+      setErrorMessage('Essa sala não existe')
+      return
+    }
+
+    if (roomRef.val().endedAt) {
+      setError(true)
+      setErrorMessage('Essa sala já foi fechada')
       return
     }
 
@@ -67,7 +76,7 @@ export const Home: React.FC = () => {
 
           <form onSubmit={ handleJoinRoom }>
             { error && (
-              <Error>Essa sala não existe</Error>
+              <Error>{ errorMessage }</Error>
             ) }
             <input
               type="text"
