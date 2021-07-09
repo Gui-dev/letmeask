@@ -11,9 +11,10 @@ interface IQuestionsProps {
   content: string
   isHighlighted?: boolean
   isAnswered?: boolean
+  children: React.ReactNode
 }
 
-export const Questions = ({ author, content }: IQuestionsProps) => {
+export const Questions = ({ author, content, children }: IQuestionsProps) => {
   return (
     <Container>
       <p>{content}</p>
@@ -24,7 +25,7 @@ export const Questions = ({ author, content }: IQuestionsProps) => {
           <h1>{ author.name }</h1>
         </div>
 
-        <div></div>
+        <div>{ children }</div>
       </Footer>
     </Container>
   )
