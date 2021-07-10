@@ -1,9 +1,17 @@
 import styled from 'styled-components'
 
-export const Container = styled.article`
+interface IContainerProps {
+  isAnswered?: boolean
+  isHighlighted?: boolean
+}
+
+export const Container = styled.article<IContainerProps>`
   padding: 2.4rem;
-  background-color: #FEFEFE;
+  background-color: ${({ isAnswered, isHighlighted }) =>
+    isHighlighted && !isAnswered ? '#F4F8FF' : isAnswered ? '#D8DCDD' : '#FEFEFE'};
   border-radius: .8rem;
+  border:  ${({ isAnswered, isHighlighted }) =>
+    isHighlighted && !isAnswered ?  '1px solid #835AFD' : '0'};
   box-shadow: 0 2px 1.2rem rgba(0, 0, 0, .04);
 
   & + article {
@@ -37,6 +45,11 @@ export const Footer = styled.footer`
       font-size: 1.4rem;
       color: #737380;
     }
+  }
+
+  > div {
+    display: flex;
+    gap: 1.6rem;
   }
 
   button {

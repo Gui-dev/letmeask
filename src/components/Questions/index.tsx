@@ -14,9 +14,9 @@ interface IQuestionsProps {
   children: React.ReactNode
 }
 
-export const Questions = ({ author, content, children }: IQuestionsProps) => {
+export const Questions = ({ author, content, isAnswered = false, isHighlighted = false, children }: IQuestionsProps) => {
   return (
-    <Container>
+    <Container isAnswered={isAnswered} isHighlighted={isHighlighted}>
       <p>{content}</p>
 
       <Footer>
