@@ -10,7 +10,7 @@ interface IButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 export const Button = ({ title, isOutlined = false, ...props }: IButtonProps) => {
   return (
 
-    <Container {...props} isOutlined={false}>
+    <Container {...props} isOutlined={isOutlined}>
       { title }
     </Container>
   )
