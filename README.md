@@ -11,9 +11,10 @@
 
 # Screens
 
-<!-- ![Home](./screens/home_screen.png)
-![Episode](./screens/episode_screen.png)
-![Episode Play](./screens/podcastr_play.png) -->
+![Login](./screens/login-room.png)
+![Create Room](./screens/create-room.png)
+![Admin Questions](./screens/admin-questions.png)
+![Questions](./screens/questions.png)
 
 ## Technologies used
   - [ReactJS](https://pt-br.reactjs.org)
